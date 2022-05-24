@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Subject, Observable} from 'rxjs';
 import {WebcamImage, WebcamInitError, WebcamUtil} from 'ngx-webcam';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-root',
@@ -8,6 +9,28 @@ import {WebcamImage, WebcamInitError, WebcamUtil} from 'ngx-webcam';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+  constructor(public dialog: MatDialog) {}
+
+  public ngOnInit(): void {
+  }
+  
+  openDialog() {
+    const dialogRef = this.dialog.open(CameraDialog);
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+    });
+  }
+
+  
+}
+
+@Component({
+  selector: 'camera-dialog',
+  templateUrl: 'camera-dialog.html',
+})
+export class CameraDialog {
+
   // toggle webcam on/off
   public showWebcam = true;
   public allowCameraSwitch = true;
@@ -27,7 +50,7 @@ export class AppComponent implements OnInit {
   // switch to next / previous / specific webcam; true/false: forward/backwards, string: deviceId
   private nextWebcam: Subject<boolean|string> = new Subject<boolean|string>();
 
-  public ngOnInit(): void {
+  constructor(){
     WebcamUtil.getAvailableVideoInputs()
       .then((mediaDevices: MediaDeviceInfo[]) => {
         this.multipleWebcamsAvailable = mediaDevices && mediaDevices.length > 1;
